@@ -1,9 +1,6 @@
 # UbuntuLinuxCCTV
 This Python application uses PyQt5 to create a graphical interface for viewing multiple real-time RTSP video streams.
 
-## Important
-You need to change the local address to that of your dvr.
-
 Key Features
 Secure Login: Allows users to input credentials and define the number of streaming channels.
 Remember Settings: Uses QSettings to save credentials and the number of channels if the user chooses to remember them.
@@ -15,3 +12,5 @@ This application is ideal for viewing IP camera feeds in a local network environ
 
 
 
+## Important
+You need to change the local address to that of your dvr.
