@@ -13,13 +13,22 @@ class MainWindow(QWidget):
 
     def initUI(self):
         self.setWindowTitle("RTSP Stream Viewer")
-
+        
         self.settings = QSettings("RTSPStreamViewer", "RTSPStreamViewer")
 
         self.main_layout = QVBoxLayout(self)
 
         self.login_layout = QVBoxLayout()
         self.login_layout.setAlignment(Qt.AlignCenter)
+
+
+        self.ip_input = QLineEdit(self)
+        self.ip_input.setPlaceholderText("IP")
+        self.login_layout.addWidget(self.ip_input)
+
+        self.port_input = QLineEdit(self)
+        self.port_input.setPlaceholderText("Port")
+        self.login_layout.addWidget(self.port_input)
 
         self.user_input = QLineEdit(self)
         self.user_input.setPlaceholderText("Usuario")
@@ -34,10 +43,10 @@ class MainWindow(QWidget):
         self.qty_channels_input.setPlaceholderText("Cantidad de Canales")
         self.login_layout.addWidget(self.qty_channels_input)
 
-        self.remember_checkbox = QCheckBox("Recordar usuario y canales", self)
+        self.remember_checkbox = QCheckBox("Recordar", self)
         self.login_layout.addWidget(self.remember_checkbox)
 
-        self.login_button = QPushButton("Iniciar Streaming", self)
+        self.login_button = QPushButton("Iniciar", self)
         self.login_button.clicked.connect(self.start_streaming)
         self.login_layout.addWidget(self.login_button)
 
@@ -50,7 +59,12 @@ class MainWindow(QWidget):
 
         self.players = []
 
+        self.load_settings()
+
     def start_streaming(self):
+        ip = self.ip_input.text().strip()
+        port = self.port_input.text().strip()
+
         user = self.user_input.text().strip()
         password = self.pass_input.text().strip()
 
@@ -61,7 +75,7 @@ class MainWindow(QWidget):
         if self.remember_checkbox.isChecked():
             self.save_settings()
 
-        base_url = f"rtsp://{user}:{password}@192.168.0.14:554/?channel={{}}&stream=0"
+        base_url = f"rtsp://{user}:{password}@{ip}:{port}/?channel={{}}&stream=0"
 
         self.resize(1000, 800)
         self.video_splitter.show()
@@ -101,6 +115,8 @@ class MainWindow(QWidget):
 
     def save_settings(self):
         """Guardar el usuario y la cantidad de canales en QSettings"""
+        self.settings.setValue("ip", self.ip_input.text().strip())
+        self.settings.setValue("port", self.port_input.text().strip())
         self.settings.setValue("usuario", self.user_input.text().strip())
         self.settings.setValue("canales", self.qty_channels_input.text().strip())
         self.settings.setValue("remember", self.remember_checkbox.isChecked())
@@ -108,6 +124,8 @@ class MainWindow(QWidget):
     def load_settings(self):
         """Cargar configuraciones guardadas en QSettings"""
         if self.settings.value("remember", False, type=bool):
+            self.ip_input.setText(self.settings.value("ip", ""))
+            self.port_input.setText(self.settings.value("port", ""))
             self.user_input.setText(self.settings.value("usuario", ""))
             self.qty_channels_input.setText(self.settings.value("canales", ""))
             self.remember_checkbox.setChecked(True)
